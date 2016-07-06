@@ -16,7 +16,7 @@ import {Mock, POSTUrlencodeJSON, POSTRawJSON} from '@heineiuo/fetch-utils'
 
 use with webpack & babel: 
 
-```
+```javascript
  {
     test: /(\.js|\.jsx)$/,
     exclude: /(node_modules\/)?!\@heineiuo)/, 
