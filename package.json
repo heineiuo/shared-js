@@ -1,5 +1,5 @@
 {
-  "name": "fetch-utils",
+  "name": "@heineiuo/fetch-utils",
   "version": "0.1.0",
   "description": "``` import {Mock, POSTUrlencodeJSON, POSTRawJSON} from './fetchUtils'",
   "main": "index.js",
