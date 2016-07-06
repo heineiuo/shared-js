@@ -91,7 +91,7 @@ const PUTJSON = function(url='/', query={}){
 
 
 const Mock = function(mockData) {
-  return new Promise(async function(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     resolve(mockData)
   })
 }
