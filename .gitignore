@@ -1,4 +1,5 @@
 .idea
 .DS_Store
-Thumb.db
+npm-debug.log
 node_modules
+Thumb.db

@@ -1,7 +1,7 @@
 {
-  "name": "@heineiuo/fetch-utils",
+  "name": "fetch-es6-utils",
   "version": "0.1.0",
-  "description": "``` import {Mock, POSTUrlencodeJSON, POSTRawJSON} from './fetchUtils'",
+  "description": "fetch utils",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
