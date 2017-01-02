@@ -1,108 +1,76 @@
-import {stringify, parse} from './circular-json'
+export const Urlencode = require('form-urlencoded');
 
-const Urlencode = function(params) {
+export const POSTUrlencodeJSON = (url='/', params={}) => new Promise(async (resolve, reject) => {
+  try {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+      },
+      body: Urlencode(params)
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+    resolve(json)
+  } catch(e){
+    reject(e)
+  }
+});
 
-  const searchParams = Object.keys(params).map((key) => {
-    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
-  }).join('&')
 
-  return searchParams
-}
-
-const UrlencodeHeader = {
-  'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-}
-
-const POSTUrlencodeJSON = function(url='/', params={}){
-  return new Promise(async function(resolve, reject){
-    try {
-      const options = {
-        method: 'POST',
-        headers: UrlencodeHeader,
-        body: Urlencode(params)
+export const POSTRawJSON = (url='/', params={}) => new Promise(async (resolve, reject) => {
+  try {
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(params),
+      headers: {
+        "Content-Type": "application/json"
       }
-      const res = await fetch(url, options)
-      const json = await res.json()
-      resolve(json)
-    } catch(e){
-      reject(e)
-    }
-  })
-}
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+    resolve(json)
+  } catch(e){
+    reject(e)
+  }
+});
+
+export const GETJSON = (url='/', query={}) => new Promise(async (resolve, reject) => {
+  try {
+    const res = await fetch(`${url}?${Urlencode(query)}`);
+    const json = await res.json();
+    resolve(json)
+  } catch(e){
+    reject(e)
+  }
+});
+
+export const DELETEJSON = (url='/', query={}) => new Promise(async (resolve, reject) => {
+  try {
+    const res = await fetch(url, {
+      method: 'DELETE'
+    });
+    resolve(await res.json())
+  } catch(e){
+    reject(e)
+  }
+});
 
 
-const POSTRawJSON = function(url='/', params={}){
-  return new Promise(async function(resolve, reject){
-    try {
-      const options = {
-        method: 'POST',
-        body: stringify(params),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
-      const res = await fetch(url, options)
-      const json = await res.json()
-      resolve(json)
-    } catch(e){
-      reject(e)
-    }
-  })
-}
-
-const GETJSON = function(url='/', query={}){
-  return new Promise(async function(resolve, reject){
-    try {
-      const res = await fetch(`${url}?${Urlencode(query)}`)
-      const json = await res.json()
-      resolve(json)
-    } catch(e){
-      reject(e)
-    }
-  })
-}
-
-const DELETEJSON = function(url='/', query={}){
-  return new Promise(async function(resolve, reject){
-    try {
-      const res = await fetch(url, {
-        method: 'DELETE'
-      })
-      resolve(await res.json())
-    } catch(e){
-      reject(e)
-    }
-  })
-
-}
-
-const PUTJSON = function(url='/', query={}){
-  return new Promise(async function (resolve, reject) {
-    try {
-      const res = await fetch(url, {
-        method: "PUT",
-        form: Urlencode(query)
-      })
-    } catch(e){
-      reject(e)
-    }
-  })
-}
+export const PUTJSON = (url='/', query={}) =>  new Promise(async (resolve, reject) => {
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      form: Urlencode(query)
+    })
+  } catch(e){
+    reject(e)
+  }
+});
 
 
-const Mock = function(mockData) {
-  return new Promise(async (resolve, reject) => {
-    resolve(mockData)
-  })
-}
+export const Mock = (mockData) => new Promise(async (resolve, reject) => {
+  resolve(mockData)
+});
 
 
-export {
-  Mock,
-  Urlencode,
-  GETJSON,
-  PUTJSON,
-  POSTRawJSON,
-  DELETEJSON,
-  POSTUrlencodeJSON
-}
