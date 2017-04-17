@@ -1,6 +1,6 @@
 export const Urlencode = require('form-urlencoded');
 
-export const POSTUrlencodeJSON = (url='/', params={}) => new Promise(async (resolve, reject) => {
+export const POSTUrlencodeJSON = (url='/', params={}) => new Promise(async resolve => {
   try {
     const options = {
       method: 'POST',
@@ -13,12 +13,12 @@ export const POSTUrlencodeJSON = (url='/', params={}) => new Promise(async (reso
     const json = await res.json();
     resolve(json)
   } catch(e){
-    reject(e)
+    resolve({error: e})
   }
 });
 
 
-export const POSTRawJSON = (url='/', params={}) => new Promise(async (resolve, reject) => {
+export const POSTRawJSON = (url='/', params={}) => new Promise(async resolve => {
   try {
     const options = {
       method: 'POST',
@@ -31,45 +31,46 @@ export const POSTRawJSON = (url='/', params={}) => new Promise(async (resolve, r
     const json = await res.json();
     resolve(json)
   } catch(e){
-    reject(e)
+    resolve({error: e})
   }
 });
 
-export const GETJSON = (url='/', query={}) => new Promise(async (resolve, reject) => {
+export const GETJSON = (url='/', query={}) => new Promise(async resolve => {
   try {
     const res = await fetch(`${url}?${Urlencode(query)}`);
     const json = await res.json();
     resolve(json)
   } catch(e){
-    reject(e)
+    resolve({error: e})
   }
 });
 
-export const DELETEJSON = (url='/', query={}) => new Promise(async (resolve, reject) => {
+export const DELETEJSON = (url='/', query={}) => new Promise(async resolve => {
   try {
     const res = await fetch(url, {
       method: 'DELETE'
     });
     resolve(await res.json())
   } catch(e){
-    reject(e)
+    resolve({error: e})
   }
 });
 
 
-export const PUTJSON = (url='/', query={}) =>  new Promise(async (resolve, reject) => {
+export const PUTJSON = (url='/', query={}) => new Promise(async resolve => {
   try {
     const res = await fetch(url, {
       method: "PUT",
       form: Urlencode(query)
     })
+    resolve(await res.json())
   } catch(e){
-    reject(e)
+    resolve({error: e})
   }
 });
 
 
-export const Mock = (mockData) => new Promise(async (resolve, reject) => {
+export const Mock = (mockData) => new Promise(async resolve => {
   resolve(mockData)
 });
 
