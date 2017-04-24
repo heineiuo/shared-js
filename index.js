@@ -1,77 +1,91 @@
-export const Urlencode = require('form-urlencoded');
+import fetch from 'isomorphic-fetch'
+import UrlEncode from "form-urlencoded"
 
-export const POSTUrlencodeJSON = (url='/', params={}) => new Promise(async resolve => {
-  try {
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-      },
-      body: Urlencode(params)
-    };
-    const res = await fetch(url, options);
-    const json = await res.json();
-    resolve(json)
-  } catch(e){
-    resolve({error: e})
+class Fetch {
+  constructor(url, params = {}, options={}) {
+    this.args = Object.assign({
+      debug: false,
+      mode: 'json',
+      extraError: {}
+    }, options)
+    this.url = url;
+    this.params = params;
   }
-});
 
+  options = {
+    headers: {}
+  };
 
-export const POSTRawJSON = (url='/', params={}) => new Promise(async resolve => {
-  try {
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(params),
-      headers: {
-        "Content-Type": "application/json"
+  params = (params, replace=false) => {
+    this.params = replace ? params : Object.assign({}, this.params, params)
+    return this;
+  }
+
+  mode = (mode) => {
+    this.args.mode = mode;
+    return this;
+  }
+
+  debug = (bool, extraError = {}) => {
+    this.args.debug = bool;
+    this.args.extraError = extraError;
+    return this;
+  }
+
+  formData = (formData) => {
+    this.formData = formData;
+    this.bodyType = 'FormData'
+    return this;
+  }
+
+  fetch = (method = 'POST') => new Promise(async (resolve, reject) => {
+    let text = null;
+    try {
+      this.options.method = method.toUpperCase();
+
+      if (this.bodyType === 'FormData') {
+        const sepCode = this.url.search(/\?/) > 0 ? '&' : '?'
+        this.url = `${this.url}${sepCode}${UrlEncode(this.params, {
+          ignorenull : true,
+          sorted : true
+        })}`
+        if (this.options.method === 'GET') return resolve({error: 'Form data must use POST method'})
+        this.options.body = this.formData
+      } else {
+        if (this.args.mode === 'urlencoded') {
+          this.options.headers["Content-Type"] = 'application/x-www-form-urlencoded;charset=UTF-8'
+          this.options.body = UrlEncode(this.params)
+        } else {
+          this.options.headers["Content-Type"] = "application/json"
+          this.options.body = JSON.stringify(this.params)
+        }
+
       }
-    };
-    const res = await fetch(url, options);
-    const json = await res.json();
-    resolve(json)
-  } catch(e){
-    resolve({error: e})
-  }
-});
+      if (this.args.debug) console.log(`fetch: ${this.url}`)
+      const res = await fetch(this.url, this.options)
+      text = await res.text()
+      const json = JSON.parse(text)
+      resolve(json)
+    } catch (e) {
+      if (this.args.debug) {
+        console.log(
+          `
+fetch: server response is not JSON format, please check:
+===text start===
+${text}
+===text end===
+`
+        )
+      }
+      resolve(Object.assign({}, this.args.extraError, {error: e.name, message: e.message}))
+    }
+  })
 
-export const GETJSON = (url='/', query={}) => new Promise(async resolve => {
-  try {
-    const res = await fetch(`${url}?${Urlencode(query)}`);
-    const json = await res.json();
-    resolve(json)
-  } catch(e){
-    resolve({error: e})
-  }
-});
+  post = () => this.fetch('POST')
+  put = () => this.fetch('PUT')
+  get = () => this.fetch('GET')
+}
 
-export const DELETEJSON = (url='/', query={}) => new Promise(async resolve => {
-  try {
-    const res = await fetch(url, {
-      method: 'DELETE'
-    });
-    resolve(await res.json())
-  } catch(e){
-    resolve({error: e})
-  }
-});
-
-
-export const PUTJSON = (url='/', query={}) => new Promise(async resolve => {
-  try {
-    const res = await fetch(url, {
-      method: "PUT",
-      form: Urlencode(query)
-    })
-    resolve(await res.json())
-  } catch(e){
-    resolve({error: e})
-  }
-});
-
-
-export const Mock = (mockData) => new Promise(async resolve => {
-  resolve(mockData)
-});
-
+export {UrlEncode}
+export default (...props) => new Fetch(...props)
 
