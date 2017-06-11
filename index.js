@@ -43,14 +43,20 @@ class Fetch {
     try {
       this.options.method = method.toUpperCase();
 
-      if (this.bodyType === 'FormData') {
+      if (this.bodyType === 'FormData' || this.options.method === 'GET') {
         const sepCode = this.url.search(/\?/) > 0 ? '&' : '?'
         this.url = `${this.url}${sepCode}${UrlEncode(this.params, {
           ignorenull : true,
           sorted : true
         })}`
+      }
+      if (this.bodyType === 'FormData') {
         if (this.options.method === 'GET') return resolve({error: 'Form data must use POST method'})
         this.options.body = this.formData
+      }
+        
+      if (this.options.method === 'GET'){
+        delete this.options.body;
       } else {
         if (this.args.mode === 'urlencoded') {
           this.options.headers["Content-Type"] = 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -59,7 +65,6 @@ class Fetch {
           this.options.headers["Content-Type"] = "application/json"
           this.options.body = JSON.stringify(this.params)
         }
-
       }
       if (this.args.debug) console.log(`fetch: ${this.url}`)
       const res = await fetch(this.url, this.options)

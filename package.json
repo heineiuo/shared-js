@@ -1,5 +1,5 @@
 {
-  "name": "fetch-tools",
+  "name": "@shared/fetch",
   "version": "0.4.5",
   "description": "fetch utils",
   "main": "lib/index.js",
